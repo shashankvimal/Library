@@ -23,12 +23,20 @@ typedef struct
 DP_LCG_SEED_t seeds = {1, 1};
 
 
-/*
+/* *********************************************************************************
+** Function: Rng_randomNumber
 **
+** Description: Generates random number in floating format,
+**              based on rand() and srand() std c-lib callls.
+**              It uses sum of current system time and user defined fudgeFactor.
+**              fudgeFactor is to improve randomness 
 **
-**
+** Input: User defined seed value
 ** 
-*/
+** Output: Random number 
+**
+** Remarks:
+************************************************************************************/
 double Rng_randomNumber(double fudgeFactor)
 {
 	/*Form a seed using current time and user defined seed factor*/
@@ -38,44 +46,130 @@ double Rng_randomNumber(double fudgeFactor)
 	srand(seed);
 	return rand();
 }
-
+/* *********************************************************************************
+** Function: Rng_randomNumberFromGivenRange
+**
+** Description: Generates random number in floating format,
+** based on rand() and srand() std c-lib callls.
+** The generated random number is within the user defined range. 
+**
+** Input: lowerLimit-> Lower value of range of random number
+**        upperLimit-> Upper value of range of random number
+** 
+** Output: Random number 
+**
+** Remarks:
+************************************************************************************/
 double Rng_randomNumberFromGivenRange(double lowerLimit, double upperLimit)
 {
 	ASSERT(lowerLimit < upperLimit, ERROR: Paramater Inverted!!!);
 	srand(time(NULL));
 	return (lowerLimit + (upperLimit - lowerLimit) * RANDOM_NUM(0,1));
 }
-
+/* *********************************************************************************
+** Function: Rng_randomNumUpto
+**
+** Description: Generates random number in floating format,
+** 				based on rand() and srand() std c-lib callls.
+** 				It uses a given number as end point of the range for random number.
+**              i.e. the generated random number will always be less than the user
+**              defined limit. 
+**
+** Input: User defined upper limit
+** 
+** Output: Random number 
+**
+** Remarks:
+************************************************************************************/
 double Rng_randomNumUpto(double upperLimit)
 {
 	ASSERT(upperLimit > 0, ERROR: Incorrect  Parameter!!!);
 	
 	return (upperLimit * RANDOM_NUM(0, 1));
 }
-
+/* *********************************************************************************
+** Function: Rng_randomNumLtdByTwoConsecutiveNum
+**
+** Description: Generates random number in floating format,
+**              based on rand() and srand() std c-lib callls.
+**              It uses a given number as starting point of a range and treats the
+**              next subsequent number as end point of the range.  
+**
+** Input: The starting point of the number.
+** 
+** Output: Random number 
+**
+** Remarks:
+************************************************************************************/
 double Rng_randomNumLtdByTwoConsecutiveNum(double firstNum)
 {
 	return (RANDOM_NUM(0,1) + firstNum);
 }
-
+/* *********************************************************************************
+** Function: Rng_randomNumForGivenRange
+**
+** Description: Generates random number for a given range. User of this API shall
+**              must make sure that the lower limit of the range is smaller than 
+**              the upper limit. 
+**
+** Input: lowerLimit-> start point of the range.
+**        upperLimit-> end point of the range.
+** 
+** Output: Random number 
+**
+** Remarks: If lowerlimit is greater than upper limit in that case program will exit.
+************************************************************************************/
 double Rng_randomNumForGivenRange(double lowerLimit, double upperLimit)
 {
 	ASSERT(lowerLimit < upperLimit, ERROR: Paramater Inverted!!!);
 	
 	return(lowerLimit + (upperLimit - lowerLimit) * RANDOM_NUM(0, 1));
 }
-
+/* *********************************************************************************
+** Function: Rng_generateRandomBoolean
+**
+** Description: This function generates 1 and 0 randomly. This function uses c-lib 
+**              APIs.
+** 
+** Input: None
+** 
+** Output: 1 or 0 
+**
+** Remarks:
+************************************************************************************/
 bool Rng_generateRandomBoolean(void)
 {
 	return floor(2 * RANDOM_NUM(0, 1));
 }
-
+/* *********************************************************************************
+** Function: Rng_initSeedValues
+**
+** Description: Initializes both the seed values for dual phase linear congruential
+**              random number generator. This function has file scope.        
+**
+** Input: pointer to the seed values structure
+** 
+** Output: None
+**
+** Remarks:
+************************************************************************************/
 static void Rng_initSeedValues(DP_LCG_SEED_t* pSeed_p)
 {
 	pSeed_p->s1st = A1 * (pSeed_p->s1st % Q1) - R1 * (pSeed_p->s1st / Q1);
 	pSeed_p->s2nd = A2 * (pSeed_p->s2nd % Q2) - R2 * (pSeed_p->s2nd / Q2);
 }
-
+/* *********************************************************************************
+** Function: Rng_dualPhaseLcgRandomNum
+**
+** Description: This function uses two seed values based on predetermined 
+**              natural numbers. This function does not depend on c-library APIs.
+**
+** Input: None
+** 
+** Output: Random number 
+**
+** Remarks:
+************************************************************************************/
 int Rng_dualPhaseLcgRandomNum(void)
 {
 	int result;
